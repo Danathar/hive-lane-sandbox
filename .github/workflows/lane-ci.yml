@@ -1,10 +1,13 @@
 # The one required check for the serialized merge lane exercise
 # (hivecommons/hive#7563). It runs on every pull request with no path filter,
 # so the lane's front never stalls waiting for a check that was never started.
-# Three files in the tree steer it:
-#   SLOW    sleep 10 minutes, then pass  (a front that is waiting on its check)
-#   SLOWER  sleep 20 minutes, then pass  (still in progress at a 15m front timeout)
-#   FAIL    fail                          (red at the front)
+# Files in the tree steer it:
+#   SLOW         sleep 10 minutes, then pass  (a front that is waiting on its check)
+#   SLOWER       sleep 20 minutes, then pass  (still in progress at a 15m front timeout)
+#   FAIL         fail                          (red at the front)
+#   FAIL_ON_ARM  fail only when ARM is also present. The dashboard will not
+#                queue a red PR, so a PR carrying this is green when queued and
+#                turns red once the lane merges a main that carries ARM into it.
 name: Lane CI
 on:
   pull_request:
@@ -26,4 +29,5 @@ jobs:
           if [ -f SLOW ]; then echo "SLOW present: sleeping 600s"; sleep 600; fi
           if [ -f SLOWER ]; then echo "SLOWER present: sleeping 1200s"; sleep 1200; fi
           if [ -f FAIL ]; then echo "FAIL present: failing"; exit 1; fi
+          if [ -f FAIL_ON_ARM ] && [ -f ARM ]; then echo "FAIL_ON_ARM and ARM present: failing"; exit 1; fi
           echo "no FAIL file: passing"
