@@ -1,1 +1,0 @@
-Case 4 fixture C: this SLOW file makes the required check sleep 10 minutes, so C waits at the front long enough to be held.
