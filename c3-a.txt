@@ -1,0 +1,1 @@
+Fixture A for cases 2 and 3 of the serialized merge lane exercise.
